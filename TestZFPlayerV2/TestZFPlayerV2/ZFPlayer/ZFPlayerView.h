@@ -37,6 +37,12 @@
 /** 控制层即将隐藏 */
 - (void)zf_playerControlViewWillHidden:(UIView *)controlView isFullscreen:(BOOL)fullscreen;
 
+/** 评论按钮事件 */
+-(void)zf_playerCommentAction;
+/** 分享按钮事件 */
+-(void)zf_playerShareAction;
+/** 点赞按钮事件 */
+-(void)zf_playerPraiseAction;
 @end
 
 // playerLayer的填充模式（默认：等比例填充，直到一个维度到达区域边界）

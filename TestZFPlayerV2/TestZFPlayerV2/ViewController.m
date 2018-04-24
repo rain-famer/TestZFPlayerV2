@@ -47,8 +47,7 @@
         make.height.with.mas_equalTo(40);
     }];
     
-    // 自动播放，默认不自动播放
-    [self.playerView autoPlayTheVideo];
+    [self.playerView pause];
 }
 
 
@@ -100,13 +99,21 @@
     [self.navigationController popViewControllerAnimated:YES];
 }
 
+-(void)zf_playerShareAction{
+    NSLog(@"--------zf_playerShareAction-----------");
+}
+
+-(void)zf_playerCommentAction{
+    NSLog(@"--------zf_playerCommentAction-----------");
+}
+
+-(void)zf_playerPraiseAction{
+    NSLog(@"--------zf_playerPraiseAction-----------");
+}
+
 - (void)zf_playerDownload:(NSString *)url {
     [self.playerView pause];
-    UIView *view = [[UIView alloc] initWithFrame:CGRectMake(100, 100, 100, 100)];
-    view.backgroundColor = [UIColor yellowColor];
-//    [[UIApplication sharedApplication].keyWindow addSubview:view];
     
-    return;
     // 此处是截取的下载地址，可以自己根据服务器的视频名称来赋值
     NSString *name = [url lastPathComponent];
     [[ZFDownloadManager sharedDownloadManager] downFileUrl:url filename:name fileimage:nil];
@@ -135,7 +142,8 @@
         _playerModel                  = [[ZFPlayerModel alloc] init];
         _playerModel.title            = @"这里设置视频标题";
         _playerModel.videoURL         = [NSURL URLWithString:@"http://120.25.226.186:32812/resources/videos/minion_01.mp4"];
-        _playerModel.placeholderImage = [UIImage imageNamed:@"loading_bgView1"];
+//        _playerModel.placeholderImage = [UIImage imageNamed:@"loading_bgView1"];
+        _playerModel.placeholderImageURLString = @"http://img.wdjimg.com/image/video/447f973848167ee5e44b67c8d4df9839_0_0.jpeg";
         _playerModel.fatherView       = self.playerFatherView;
         //        _playerModel.resolutionDic = @{@"高清" : self.videoURL.absoluteString,
         //                                       @"标清" : self.videoURL.absoluteString};

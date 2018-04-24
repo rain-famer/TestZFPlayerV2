@@ -1549,7 +1549,8 @@ typedef NS_ENUM(NSInteger, PanDirection){
 }
 
 - (void)zf_controlView:(UIView *)controlView cneterPlayAction:(UIButton *)sender {
-    [self configZFPlayer];
+    [self zf_controlView:controlView playAction:nil];
+//    [self configZFPlayer];
 }
 
 - (void)zf_controlView:(UIView *)controlView repeatPlayAction:(UIButton *)sender {
@@ -1594,15 +1595,21 @@ typedef NS_ENUM(NSInteger, PanDirection){
 }
 
 -(void)zf_controlView:(UIView *)controlView commentAction:(UIButton *)sender{
-    
+    if ([self.delegate respondsToSelector:@selector(zf_playerCommentAction)]) {
+        [self.delegate zf_playerCommentAction];
+    }
 }
 
 -(void)zf_controlView:(UIView *)controlView shareAction:(UIButton *)sender{
-    
+    if ([self.delegate respondsToSelector:@selector(zf_playerShareAction)]) {
+        [self.delegate zf_playerShareAction];
+    }
 }
 
 -(void)zf_controlView:(UIView *)controlView praiseAction:(UIButton *)sender{
-    
+    if ([self.delegate respondsToSelector:@selector(zf_playerPraiseAction)]) {
+        [self.delegate zf_playerPraiseAction];
+    }
 }
 
 - (void)zf_controlView:(UIView *)controlView progressSliderTap:(CGFloat)value {
