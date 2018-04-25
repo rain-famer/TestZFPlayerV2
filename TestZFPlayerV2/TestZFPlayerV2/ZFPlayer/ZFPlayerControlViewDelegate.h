@@ -56,6 +56,8 @@
 - (void)zf_controlView:(UIView *)controlView shareAction:(UIButton *)sender;
 /** 点赞按钮事件 */
 - (void)zf_controlView:(UIView *)controlView praiseAction:(UIButton *)sender;
+/** 设置按钮事件 */
+- (void)zf_controlView:(UIView *)controlView settingAction:(UIButton *)sender;
 
 /** 切换分辨率按钮事件 */
 - (void)zf_controlView:(UIView *)controlView resolutionAction:(UIButton *)sender;

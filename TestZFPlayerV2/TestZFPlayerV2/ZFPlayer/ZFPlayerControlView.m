@@ -30,7 +30,7 @@
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored"-Wdeprecated-declarations"
 
-static const CGFloat ZFPlayerAnimationTimeInterval             = 70.0f;
+static const CGFloat ZFPlayerAnimationTimeInterval             = 7.0f;
 static const CGFloat ZFPlayerControlBarAutoFadeOutTimeInterval = 0.35f;
 
 @interface ZFPlayerControlView () <UIGestureRecognizerDelegate>
@@ -75,6 +75,7 @@ static const CGFloat ZFPlayerControlBarAutoFadeOutTimeInterval = 0.35f;
 @property (nonatomic, strong) UIButton                 *praiseBtn;
 /** 设置按钮 */
 @property (nonatomic, strong) UIButton                 *settingBtn;
+
 /*===============自定义添加的按钮==================*/
 
 /** 切换分辨率按钮 */
@@ -132,6 +133,7 @@ static const CGFloat ZFPlayerControlBarAutoFadeOutTimeInterval = 0.35f;
         [self.bottomImageView addSubview:self.videoSlider];
         [self.bottomImageView addSubview:self.fullScreenBtn];
         [self.bottomImageView addSubview:self.totalTimeLabel];
+        [self.bottomImageView addSubview:self.settingBtn];
         
         [self.topImageView addSubview:self.downLoadBtn];
         [self addSubview:self.lockBtn];
@@ -260,8 +262,14 @@ static const CGFloat ZFPlayerControlBarAutoFadeOutTimeInterval = 0.35f;
         make.centerY.equalTo(self.currentTimeLabel.mas_centerY);
     }];
     
+    [self.settingBtn mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.width.height.mas_equalTo(23);
+        make.trailing.mas_equalTo(self.fullScreenBtn.mas_leading).offset(-3);
+        make.centerY.equalTo(self.currentTimeLabel.mas_centerY);
+    }];
+    
     [self.totalTimeLabel mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.trailing.equalTo(self.fullScreenBtn.mas_leading).offset(3);
+        make.trailing.equalTo(self.settingBtn.mas_leading).offset(-3);
         make.centerY.equalTo(self.currentTimeLabel.mas_centerY);
         make.width.mas_equalTo(43);
     }];
@@ -426,6 +434,13 @@ static const CGFloat ZFPlayerControlBarAutoFadeOutTimeInterval = 0.35f;
     }
 }
 
+-(void)settingBtnClick:(UIButton *)sender{
+    NSLog(@"settingBtn click=========");
+    if ([self.delegate respondsToSelector:@selector(zf_controlView:settingAction:)]) {
+        [self.delegate zf_controlView:self settingAction:sender];
+    }
+}
+
 - (void)lockScrrenBtnClick:(UIButton *)sender {
     sender.selected = !sender.selected;
     self.showing = NO;
@@ -479,6 +494,9 @@ static const CGFloat ZFPlayerControlBarAutoFadeOutTimeInterval = 0.35f;
 - (void)centerPlayBtnClick:(UIButton *)sender {
     if ([self.delegate respondsToSelector:@selector(zf_controlView:cneterPlayAction:)]) {
         [self.delegate zf_controlView:self cneterPlayAction:sender];
+    }
+    if (sender.isSelected) {
+        [self autoFadeOutControlView2];
     }
 }
 
@@ -629,10 +647,20 @@ static const CGFloat ZFPlayerControlBarAutoFadeOutTimeInterval = 0.35f;
                                                object:nil];
 }
 
-
+/**
+ 正常调用
+ */
 - (void)autoFadeOutControlView {
-    [NSObject cancelPreviousPerformRequestsWithTarget:self selector:@selector(zf_playerHideControlView) object:nil];
-    [self performSelector:@selector(zf_playerHideControlView) withObject:nil afterDelay:ZFPlayerAnimationTimeInterval];
+        [NSObject cancelPreviousPerformRequestsWithTarget:self selector:@selector(zf_playerHideControlView) object:nil];
+        [self performSelector:@selector(zf_playerHideControlView) withObject:nil afterDelay:ZFPlayerAnimationTimeInterval];
+}
+
+/**
+给初始化播放器时点击播放调用，需要让它调用zf_playerHideControlView2方法，它在里面会7秒后再次判断state决定是否要隐藏控制条
+ */
+- (void)autoFadeOutControlView2 {
+    [NSObject cancelPreviousPerformRequestsWithTarget:self selector:@selector(zf_playerHideControlView2) object:nil];
+    [self performSelector:@selector(zf_playerHideControlView2) withObject:nil afterDelay:7];
 }
 
 /**
@@ -766,6 +794,15 @@ static const CGFloat ZFPlayerControlBarAutoFadeOutTimeInterval = 0.35f;
         _currentTimeLabel.textAlignment = NSTextAlignmentCenter;
     }
     return _currentTimeLabel;
+}
+
+-(UIButton *)settingBtn{
+    if (!_settingBtn) {
+        _settingBtn = [UIButton buttonWithType:UIButtonTypeCustom];
+        [_settingBtn setBackgroundImage:[UIImage imageNamed:@"setting"] forState:UIControlStateNormal];
+        [_settingBtn addTarget:self action:@selector(settingBtnClick:) forControlEvents:UIControlEventTouchUpInside];
+    }
+    return _settingBtn;
 }
 
 - (UIProgressView *)progressView {
@@ -1042,8 +1079,9 @@ static const CGFloat ZFPlayerControlBarAutoFadeOutTimeInterval = 0.35f;
     [UIView animateWithDuration:ZFPlayerControlBarAutoFadeOutTimeInterval animations:^{
         [self showControlView];
     } completion:^(BOOL finished) {
-        self.showing = YES;
-        [self autoFadeOutControlView];
+        
+            self.showing = YES;
+            [self autoFadeOutControlView2];
     }];
 }
 
@@ -1055,6 +1093,32 @@ static const CGFloat ZFPlayerControlBarAutoFadeOutTimeInterval = 0.35f;
         [self.delegate zf_controlViewWillHidden:self isFullscreen:self.isFullScreen];
     }
     [self zf_playerCancelAutoFadeOutControlView];
+    NSInteger state = [ZFPlayerView sharedPlayerView].state;
+    //7秒后如果是播放状态就隐藏控制条
+    NSLog(@"====after 8s======%ld",state);
+    [UIView animateWithDuration:ZFPlayerControlBarAutoFadeOutTimeInterval animations:^{
+        [self hideControlView];
+    } completion:^(BOOL finished) {
+        self.showing = NO;
+    }];
+}
+
+/**
+ *  隐藏控制层2
+    使用上面的隐藏初始化播放器点播放不会隐藏工具条，因为执行到方法，state还没赋值为playing，这里再写一个，7秒后准确判断
+ */
+- (void)zf_playerHideControlView2 {
+    if ([self.delegate respondsToSelector:@selector(zf_controlViewWillHidden:isFullscreen:)]) {
+        [self.delegate zf_controlViewWillHidden:self isFullscreen:self.isFullScreen];
+    }
+    [self zf_playerCancelAutoFadeOutControlView];
+    NSInteger state = [ZFPlayerView sharedPlayerView].state;
+    //7秒后如果是播放状态就隐藏控制条
+    NSLog(@"====after 7s======%ld",state);
+    if ([ZFPlayerView sharedPlayerView].state != ZFPlayerStatePlaying) {
+        return;
+    }
+    
     [UIView animateWithDuration:ZFPlayerControlBarAutoFadeOutTimeInterval animations:^{
         [self hideControlView];
     } completion:^(BOOL finished) {

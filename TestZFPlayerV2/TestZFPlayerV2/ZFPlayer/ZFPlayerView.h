@@ -43,6 +43,8 @@
 -(void)zf_playerShareAction;
 /** 点赞按钮事件 */
 -(void)zf_playerPraiseAction;
+/** 设置按钮事件 */
+-(void)zf_playerSettingAction;
 @end
 
 // playerLayer的填充模式（默认：等比例填充，直到一个维度到达区域边界）

@@ -100,15 +100,19 @@
 }
 
 -(void)zf_playerShareAction{
-    NSLog(@"--------zf_playerShareAction-----------");
+    NSLog(@"vc--------zf_playerShareAction-----------");
 }
 
 -(void)zf_playerCommentAction{
-    NSLog(@"--------zf_playerCommentAction-----------");
+    NSLog(@"vc--------zf_playerCommentAction-----------");
 }
 
 -(void)zf_playerPraiseAction{
-    NSLog(@"--------zf_playerPraiseAction-----------");
+    NSLog(@"vc--------zf_playerPraiseAction-----------");
+}
+
+-(void)zf_playerSettingAction{
+    NSLog(@"vc--------zf_playerSettingAction-----------");
 }
 
 - (void)zf_playerDownload:(NSString *)url {
@@ -153,7 +157,7 @@
 
 - (ZFPlayerView *)playerView {
     if (!_playerView) {
-        _playerView = [[ZFPlayerView alloc] init];
+        _playerView = [ZFPlayerView sharedPlayerView];
         
         /*****************************************************************************************
          *   // 指定控制层(可自定义)

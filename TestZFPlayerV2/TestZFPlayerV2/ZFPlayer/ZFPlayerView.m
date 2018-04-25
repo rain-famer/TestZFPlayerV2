@@ -1504,7 +1504,11 @@ typedef NS_ENUM(NSInteger, PanDirection){
         if (self.state == ZFPlayerStatePlaying) { self.state = ZFPlayerStatePause;}
     } else {
         [self play];
-        if (self.state == ZFPlayerStatePause) { self.state = ZFPlayerStatePlaying; }
+        if (self.state == ZFPlayerStatePause) {
+            self.state = ZFPlayerStatePlaying;
+            //控制条消失
+            
+        }
     }
     
     if (!self.isAutoPlay) {
@@ -1609,6 +1613,12 @@ typedef NS_ENUM(NSInteger, PanDirection){
 -(void)zf_controlView:(UIView *)controlView praiseAction:(UIButton *)sender{
     if ([self.delegate respondsToSelector:@selector(zf_playerPraiseAction)]) {
         [self.delegate zf_playerPraiseAction];
+    }
+}
+
+-(void)zf_controlView:(UIView *)controlView settingAction:(UIButton *)sender{
+    if ([self.delegate respondsToSelector:@selector(zf_playerSettingAction)]) {
+        [self.delegate zf_playerSettingAction];
     }
 }
 
